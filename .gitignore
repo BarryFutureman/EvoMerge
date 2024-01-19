@@ -1,0 +1,17 @@
+/mergekit_repo
+/results_output
+/lm-evaluation-harness
+/runs/evolve_tiny_llamas
+/runs/random_llamas
+/evolution.egg-info
+/cache
+/evolution/utils/data/.
+/lm_eval/my_datasets
+
+direct_eval.py
+download_dataset.py
+lite_llama_demo.py
+my_eval.py
+plotting_demo.py
+setup.py
+slerp_tinymix_demo.py
