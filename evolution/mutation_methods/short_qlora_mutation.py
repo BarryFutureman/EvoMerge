@@ -21,6 +21,7 @@ class ShortQloraMutation(MutationMethod):
                 lm.force_mutate = False
                 mutate_count -= 1
         if mutate_count > 0:
+            mutate_count = min((len(population) - self.keep_top_k), mutate_count)
             random_indexes = random.sample(range(self.keep_top_k, len(population)), mutate_count)
             for i in random_indexes:
                 lm = population[i]
