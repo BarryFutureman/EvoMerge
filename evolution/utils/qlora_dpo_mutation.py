@@ -17,7 +17,7 @@ DISTILABEL_ORCA = DISTILABEL_ORCA.filter(
         len(r["input"])+len(r["chosen"]) <= 1024
 )
 ALL_LORA_TARGETS = ['k_proj', 'gate_proj', 'v_proj', 'up_proj', 'q_proj', 'o_proj', 'down_proj']
-LEARNING_RATES = [1e-5, 5e-5, 6e-6, 1e-6, 2e-6, 5e-7]
+LEARNING_RATES = [1e-5, 5e-5, 6e-6, 1e-6, 2e-6, 5e-7, 2e-7]
 
 
 def merge_lora(base_model_path, tokenizer, lora_adapter_path):
@@ -53,8 +53,8 @@ def get_mutation_dataset(num_datasets, mutation_strength):
 
 def run_dpo_mutation(model_path, num_mutations, mutation_strength):
     # Define Mutation Parameters
-    lora_r = random.choice([4, 8, 16, 32])
-    lora_alpha = random.choice([4, 8, 16])
+    lora_r = random.choice([4, 8, 16, 32, 64])
+    lora_alpha = random.choice([4, 8, 16, 32, 64])
     # TODO: For now we don't randomize lora targets,
     #  this would be something to experiment with in the future
     # lora_targets = random.sample(ALL_LORA_TARGETS, random.randint(2, len(ALL_LORA_TARGETS)))

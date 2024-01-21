@@ -17,7 +17,5 @@ direct_eval.py
 download_dataset.py
 lite_llama_demo.py
 my_eval.py
-plotting_demo.py
-setup.py
 slerp_tinymix_demo.py
 ancestry_viewer.py
