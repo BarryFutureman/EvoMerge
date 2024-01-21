@@ -33,7 +33,7 @@ class RandomEval(EvaluationMethod):
         # random_size = random.randint(10, 20)
         hellaswag_json_file = randomly_sample_hellaswag(dataset_dir=self.dataset_dir, sample_size=16)
         # gsm8k_json_file = randomly_sample_gsm8k(dataset_dir=self.dataset_dir, sample_size=10)
-        winogrande_json_file = randomly_sample_winogrande(dataset_dir=self.dataset_dir, sample_size=32)
+        winogrande_json_file = randomly_sample_winogrande(dataset_dir=self.dataset_dir, sample_size=128)
 
         return [hellaswag_json_file, winogrande_json_file]
 

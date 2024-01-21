@@ -10,7 +10,7 @@ from peft import LoraConfig, PeftModel
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 
 
-DATASETS = ["arc_easy_I.json", "arc_easy_II.json", "arc_easy_III.json", "camel_math_qa.json"]
+DATASETS = ["arc_easy_intuition.json", "camel_math_qa.json"]
 # TODO: the correct dataset folder is actually within the simulation folder
 ALL_LORA_TARGETS = ['k_proj', 'gate_proj', 'v_proj', 'up_proj', 'q_proj', 'o_proj', 'down_proj']
 LEARNING_RATES = [1e-4, 2e-4, 6e-4, 1e-5, 2e-5, 5e-5]
@@ -41,20 +41,21 @@ def merge_lora(base_model_path, tokenizer, lora_adapter_path):
 
 def get_mutation_dataset(num_datasets):
     dataset_lst = []
+    dataset_names = []
     for n in range(num_datasets):
-        selected_dataset_path = os.path.dirname(os.path.abspath(__file__)) + "/data/" \
-                                + DATASETS[random.randint(0, len(DATASETS)-1)]
+        dataset_name = DATASETS[random.randint(0, len(DATASETS)-1)]
+        selected_dataset_path = os.path.dirname(os.path.abspath(__file__)) + "/data/" + dataset_name
         selected_dataset = load_dataset("json", data_files=[selected_dataset_path])["train"]
 
-        max_sample_size = 10  # TODO: Maybe this could be random?
+        max_sample_size = 32  # TODO: Maybe this could be random?
         if len(selected_dataset) > max_sample_size:
             selected_dataset = selected_dataset.shuffle().select([i for i in range(max_sample_size)])
 
         dataset_lst.append(selected_dataset)
+        dataset_names.append(dataset_name)
     joined_dataset = concatenate_datasets(dataset_lst)
 
-    torch.cuda.empty_cache()
-    return joined_dataset
+    return joined_dataset, dataset_names
 
 
 def run_sft_mutation(model_path, num_mutations):
@@ -62,21 +63,21 @@ def run_sft_mutation(model_path, num_mutations):
     #  delete lora and original model, update EvoLM model file path
 
     # Define Mutation Parameters
-    lora_r = 64 * random.randint(1, 8) // 4
-    lora_alpha = lora_r * random.randint(2, 4) // 2
+    lora_r = random.choice([8, 16, 32])
+    lora_alpha = random.choice([8, 16, 32])
     # TODO: For now we don't randomize lora targets,
     #  this would be something to experiment with in the future
     # lora_targets = random.sample(ALL_LORA_TARGETS, random.randint(2, len(ALL_LORA_TARGETS)))
     num_epochs = num_mutations * 2
-    warmup_ratio = random.uniform(0.05, 0.2)
+    warmup_ratio = 0.1  # round(random.uniform(0.05, 0.2), 2)
     lr = random.choice(LEARNING_RATES)
 
-    # Info
-    mutation_info = {"lora_r": lora_r, "lora_alpha": lora_alpha, "num_mutation": num_mutations,
-                     "warmup_ratio": warmup_ratio, "learning_rate": lr}
-
     # Load dataset
-    train_dataset = get_mutation_dataset(num_mutations)
+    train_dataset, selected_dataset_names = get_mutation_dataset(num_mutations)
+
+    # Info
+    mutation_info = {"datasets": selected_dataset_names, "lora_r": lora_r, "lora_alpha": lora_alpha, "num_mutation": num_mutations,
+                     "warmup_ratio": warmup_ratio, "learning_rate": lr}
 
     # Configure tokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
@@ -117,10 +118,10 @@ def run_sft_mutation(model_path, num_mutations):
     # Format data
     def formatting_prompts_func(example):
         output_texts = []
-        for i in range(len(example['Question'])):
+        for i in range(len(example['question'])):
             messages = [
-                {"role": "user", "content": example["Question"][i]},
-                {"role": "assistant", "content": example["Answer"][i]},
+                {"role": "user", "content": example["question"][i]},
+                {"role": "assistant", "content": example["answer"][i]},
             ]
             text = tokenizer.apply_chat_template(messages, tokenize=False,
                                                  add_generation_prompt=False)

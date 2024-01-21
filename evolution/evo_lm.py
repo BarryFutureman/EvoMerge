@@ -72,7 +72,7 @@ class EvoLM:
         self.config = AutoConfig.from_pretrained(self.model_folder)
 
     def __repr__(self):
-        return f"EvoLM <{self.model_name}>"
+        return f"EvoLM <{self.model_name} - {self.DNA.id}>"
 
     def set_fitness(self, value):
         self.DNA.fitness = value
@@ -118,4 +118,6 @@ class EvoLM:
         # os.makedirs(output_path, exist_ok=True)
 
         shutil.copytree(source_path, output_path)
-        return EvoLM(model_folder=output_path, dna_id=str(uuid.uuid4()))
+        new_lm = EvoLM(model_folder=output_path, dna_id=str(uuid.uuid4()))
+        new_lm.DNA.parents = [self.DNA.id, self.DNA.id]
+        return new_lm

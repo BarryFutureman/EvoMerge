@@ -1,11 +1,11 @@
 import time
-import matplotlib.pyplot as plt
 import pandas as pd
 import gradio as gr
 from gradio.themes.soft import Soft
 from gradio.themes.utils import colors, fonts, sizes
 import json
 import os
+from ancestry_tree_drawer import draw_full_tree
 
 
 cool_blue = colors.Color(
@@ -41,23 +41,10 @@ class Softy(Soft):
         )
 
 
-def define_population_tabs():
-    if os.path.exists(dna_folder):
-        gen_folders = []
-        for filename in os.listdir(dna_folder):
-            gen_folders.append(filename)
-    else:
-        raise NotImplementedError()
-    print(gen_folders)
-    with gr.Row():
-        for index, g in enumerate(gen_folders):
-            gen_folder = f"{dna_folder}/{g}"
-            population_json_files = []
-            for f in os.listdir(gen_folder):
-                if f.endswith(".json"):
-                    population_json_files.append(f"{gen_folder}/{f}")
-            with gr.Tab(f"Gen{index:06d}"):
-                define_gen_group(population_json_files)
+def draw_full_ancestry_tree():
+    img_path = draw_full_tree(simulation_folder=simulation_folder)
+
+    return img_path
 
 
 def do_gen_refresh():
@@ -112,10 +99,11 @@ def define_population(gen_folders):
         for f in os.listdir(gen_folder):
             if f.endswith(".json"):
                 population_json_files.append(f"{gen_folder}/{f}")
+
         with gr.Tab(f"Current Viewing"):
             json_nodes.extend(define_gen_group(population_json_files))
 
-        index_last = max(0, current_gen_index - 1)
+        """index_last = max(0, current_gen_index - 1)
         g = gen_folders[index_last]
         gen_folder = f"{dna_folder}/{g}"
         population_json_files = []
@@ -123,24 +111,27 @@ def define_population(gen_folders):
             if f.endswith(".json"):
                 population_json_files.append(f"{gen_folder}/{f}")
         with gr.Tab(f"Previous Generation"):
-            json_nodes.extend(define_gen_group(population_json_files))
+            json_nodes.extend(define_gen_group(population_json_files))"""
     return json_nodes
 
 
 def define_gen_group(population_json):
     json_nodes = []
     i = 0
-    while i < len(population_json):
+    max_lst_size = 16
+    while i < max_lst_size:
         with gr.Row():
-            for j in range(i, min(i + 4, len(population_json))):
+            for j in range(i, min(i + 4, max_lst_size)):
                 with gr.Column(scale=1):
-                    with open(population_json[j], 'r') as target_data_file:
-                        data = json.load(target_data_file)
-                        json_node = gr.Json(data)
-                        json_nodes.append(json_node)
+                    json_data_to_view = {}
+                    if j < len(population_json):
+                        with open(population_json[j], 'r') as target_data_file:
+                            json_data_to_view = json.load(target_data_file)
+                    json_node = gr.Json(json_data_to_view)
+                    json_nodes.append(json_node)
                 i = j
-        i += 1
 
+        i += 1
     return json_nodes
 
 
@@ -222,6 +213,12 @@ with gr.Blocks(title="Dataset Viewer", theme=Softy()) as demo:
         with gr.Row():
             refresh_fitness_plt_button = gr.Button(value="Refresh", variant="primary")
             refresh_fitness_plt_button.click(fn=plot_fitness, inputs=None, outputs=fitness_plt, every=30)
+
+        full_ancestry_tree_image = gr.Image()
+        with gr.Row():
+            draw_full_tree_button = gr.Button(value="Draw", variant="primary")
+            draw_full_tree_button.click(fn=draw_full_ancestry_tree, inputs=None,
+                                        outputs=full_ancestry_tree_image)
 
     with gr.Tab("Settings"):
         pass

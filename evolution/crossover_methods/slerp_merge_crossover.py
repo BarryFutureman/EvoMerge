@@ -34,13 +34,13 @@ class SlerpMergeCrossover(CrossoverMethod):
     def combine(self, p1, p2):
         num_layers = p1.config.num_hidden_layers
 
-        shift = random.randint(0, 100) / 100
-        cycles = random.randint(0, 50) / 5
+        shift = random.choice([0, 0.5, 1])  # random.randint(0, 10) / 10
+        cycles = random.choice([0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 6])
         self_attn_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
                                                                  num_cycles=cycles, phase_shift=np.pi * shift)
 
-        shift = random.randint(0, 100) / 100
-        cycles = random.randint(0, 50) / 5
+        shift = random.choice([0, 0.5, 1])  # random.randint(0, 10) / 10
+        cycles = random.choice([0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 6])
         mlp_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
                                                            num_cycles=cycles, phase_shift=np.pi * shift)
 
