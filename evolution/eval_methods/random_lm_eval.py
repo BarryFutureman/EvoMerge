@@ -1,21 +1,18 @@
-import random
-import time
 import gc
 import torch.cuda
 
-from evolution.evaluation import *
+from evolution.eval_methods.evaluation import *
 from evolution.utils.simple_lm_eval_run import simple_evaluate
 from evolution.utils.random_hellaswag import randomly_sample_hellaswag
-from evolution.utils.random_gsm8k import randomly_sample_gsm8k
+# from evolution.utils.random_gsm8k import randomly_sample_gsm8k
 from evolution.utils.random_winogrande import randomly_sample_winogrande
 
 
 class RandomEval(EvaluationMethod):
-    def __init__(self, dataset_dir, sample_size):
+    def __init__(self, dataset_dir, config):
         super(RandomEval, self).__init__()
         self.dataset_dir = dataset_dir
-        self.sample_size = sample_size
-        self.batch_size = 8
+        self.config = config
         
     def run_evaluation(self, population):
         tasks_file = self.generate_eval_data()
@@ -34,9 +31,11 @@ class RandomEval(EvaluationMethod):
         old_seed = state[1][0]
         print(old_seed)"""
         # random_size = random.randint(10, 20)
-        hellaswag_json_file = randomly_sample_hellaswag(dataset_dir=self.dataset_dir, sample_size=16)
+        hellaswag_json_file = randomly_sample_hellaswag(dataset_dir=self.dataset_dir,
+                                                        sample_size=16 * self.config.eval_config.eval_size)
         # gsm8k_json_file = randomly_sample_gsm8k(dataset_dir=self.dataset_dir, sample_size=10)
-        winogrande_json_file = randomly_sample_winogrande(dataset_dir=self.dataset_dir, sample_size=128)
+        winogrande_json_file = randomly_sample_winogrande(dataset_dir=self.dataset_dir,
+                                                          sample_size=128 * self.config.eval_config.eval_size)
 
         return [hellaswag_json_file, winogrande_json_file]
 
@@ -47,13 +46,13 @@ class RandomEval(EvaluationMethod):
 
         hellaswag_result = simple_evaluate(model=model, tokenizer=tokenizer, task="hellaswag_small_sample",
                                            task_json_file=task_files[0], device="cuda", normalized_acc=True,
-                                           limit=None, batch_size=self.batch_size)
+                                           limit=None, batch_size=self.config.eval_config.batch_size)
         """gsm8k_result = simple_evaluate(model=model, tokenizer=tokenizer, task="gsm8k_small_sample",
                                        task_json_file=task_files[1], device="cuda",
                                        limit=None, batch_size=self.batch_size)"""
         winogrande_result = simple_evaluate(model=model, tokenizer=tokenizer, task="winogrande_small_sample",
                                             task_json_file=task_files[1], device="cuda",
-                                            limit=None, batch_size=self.batch_size)
+                                            limit=None, batch_size=self.config.eval_config.batch_size)
 
         fitness = hellaswag_result * 0.6 + winogrande_result * 0.4  # + gsm8k_result * 0.2
 

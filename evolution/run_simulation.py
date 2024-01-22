@@ -1,5 +1,4 @@
-import random
-import time
+import simulation_configs
 import gc
 import torch
 from crossover_methods import slerp_merge_crossover
@@ -37,18 +36,20 @@ def run(simulation_folder):
             population.append(lm)
 
     # configuration
+    configs_folder = simulation_folder + "/configs"
+    simulation_config = simulation_configs.load_config(configs_folder + "/example_run.yaml")
+    print(simulation_config)
+
     population_size = len(population)
-    target_iterations = 12
-    keep_top_k = 4
-    mutate_count = 2
+    min_population_size = population_size
+    max_population_size = simulation_config.max_population_size
+    target_iterations = simulation_config.target_iterations
 
     # configurate population_scheduler
-    min_population_size = population_size
-    max_population_size = 12
-    expand_steps = 2
     population_scheduler = PopulationScheduler(population_size, max_population_size=max_population_size,
                                                min_population_size=min_population_size,
-                                               total_generations=target_iterations, expand_steps=expand_steps)
+                                               total_generations=simulation_config.target_iterations,
+                                               expand_steps=simulation_config.expand_steps)
 
     print("Population Curve:", [population_scheduler.get_population_size(i) for i in range(target_iterations)])
     while not input("Type 'C' to continue: ").lower() == "c":
@@ -56,19 +57,16 @@ def run(simulation_folder):
 
     # Run simulation loop
     evaluation_process = random_lm_eval.RandomEval(dataset_dir=simulation_folder+"/datasets",
-                                                   sample_size=20)
-    selection_process = roulette_wheel_based_selection.RouletteWheelSelection(keep_top_k=keep_top_k)
-    crossover_process = slerp_merge_crossover.SlerpMergeCrossover(population_folder=population_folder)
-    mutation_process = short_qlora_mutation.ShortQloraMutation(keep_top_k=keep_top_k,
-                                                               target_mutation_count=mutate_count,
-                                                               mutation_strength=16)
+                                                   config=simulation_config)
+    selection_process = roulette_wheel_based_selection.RouletteWheelSelection(config=simulation_config)
+    crossover_process = slerp_merge_crossover.SlerpMergeCrossover(population_folder=population_folder,
+                                                                  config=simulation_config)
+    mutation_process = short_qlora_mutation.ShortQloraMutation(config=simulation_config)
     for iteration in range(target_iterations):
         # Sanity check: clear cuda cache
         gc.collect()
         torch.cuda.empty_cache()
 
-        # TODO: Issue with more than 8 items being created is still not fixed,
-        #  debug it by letting the seed set in sft mutation
         population = evaluation_process.run_evaluation(population)
         print("=====================================================")
         for j, p in enumerate(population):
@@ -108,7 +106,7 @@ def run(simulation_folder):
 
 
 if __name__ == '__main__':
-    run("C:/Files/PycharmProjects/NeuralEvolution/EvoMerge/runs/evolve_tiny_llamas")
+    run("C:/Files/PycharmProjects/EvoMerge/EvoMerge/runs/quick_evolve")
 
 
 

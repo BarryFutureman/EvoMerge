@@ -27,6 +27,7 @@ class EvoDNA:
         self.model_name = model_name
         self.fitness = None
         self.parents = None
+        self.crossover_info = None
         self.mutation_info = None
 
     def __repr__(self):
@@ -45,7 +46,8 @@ class EvoDNA:
             'model_name': self.model_name,
             'fitness': self.fitness,
             'parents': self.parents,
-            'mutation_info': self.mutation_info
+            'crossover_info': self.crossover_info,
+            'mutation_info': self.mutation_info,
         }
 
         # Define the file path for saving

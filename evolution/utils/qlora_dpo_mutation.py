@@ -51,23 +51,26 @@ def get_mutation_dataset(num_datasets, mutation_strength):
     return sampled_dataset, dataset_names
 
 
-def run_dpo_mutation(model_path, num_mutations, mutation_strength):
+def run_dpo_mutation(model_path, num_mutations, mutation_config):
     # Define Mutation Parameters
-    lora_r = random.choice([4, 8, 16, 32, 64])
-    lora_alpha = random.choice([4, 8, 16, 32, 64])
+    mutation_strength = mutation_config.mutation_strength
+    lora_r = random.choice(mutation_config.possible_lora_r)
+    lora_alpha = random.choice(mutation_config.possible_lora_alpha)
     # TODO: For now we don't randomize lora targets,
     #  this would be something to experiment with in the future
     # lora_targets = random.sample(ALL_LORA_TARGETS, random.randint(2, len(ALL_LORA_TARGETS)))
     num_epochs = num_mutations
     warmup_ratio = 0.1  # round(random.uniform(0.05, 0.2), 2)
     lr = random.choice(LEARNING_RATES)
+    beta = random.choice(mutation_config.possible_beta)
 
     # Load dataset
     train_dataset, selected_dataset_names = get_mutation_dataset(num_mutations, mutation_strength)
 
     # Info
-    mutation_info = {"datasets": selected_dataset_names, "lora_r": lora_r, "lora_alpha": lora_alpha, "num_mutation": num_mutations,
-                     "warmup_ratio": warmup_ratio, "learning_rate": lr}
+    mutation_info = {"datasets": selected_dataset_names, "strength": mutation_strength,
+                     "lora_r": lora_r, "lora_alpha": lora_alpha, "num_mutation": num_mutations,
+                     "beta": beta, "learning_rate": lr}
 
     # Configure tokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
@@ -124,8 +127,8 @@ def run_dpo_mutation(model_path, num_mutations, mutation_strength):
     # Training arguments
     adapter_path = model_path + "-lora-adapter"
     training_args = TrainingArguments(
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=8,
+        per_device_train_batch_size=mutation_config.per_device_train_batch_size,
+        gradient_accumulation_steps=mutation_config.gradient_accumulation_steps,
         gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False},
         learning_rate=lr,

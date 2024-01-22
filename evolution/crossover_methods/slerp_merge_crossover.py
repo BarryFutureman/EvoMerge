@@ -1,5 +1,5 @@
 import random
-from evolution.crossover import *
+from evolution.crossover_methods.crossover import *
 from evolution.utils import slerp_merge
 from evolution.evo_lm import EvoLM
 import numpy as np
@@ -7,9 +7,10 @@ import uuid
 
 
 class SlerpMergeCrossover(CrossoverMethod):
-    def __init__(self, population_folder):
+    def __init__(self, population_folder, config):
         super(SlerpMergeCrossover, self).__init__()
         self.population_folder = population_folder
+        self.config = config
 
     def run_crossover(self, old_population: list, new_population: list, pairs):
         for pair in pairs:
@@ -34,13 +35,13 @@ class SlerpMergeCrossover(CrossoverMethod):
     def combine(self, p1, p2):
         num_layers = p1.config.num_hidden_layers
 
-        shift = random.choice([0, 0.5, 1])  # random.randint(0, 10) / 10
-        cycles = random.choice([0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 6])
+        shift = random.choice(self.config.crossover_config.possible_shifts)
+        cycles = random.choice(self.config.crossover_config.possible_cycles)
         self_attn_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
                                                                  num_cycles=cycles, phase_shift=np.pi * shift)
 
-        shift = random.choice([0, 0.5, 1])  # random.randint(0, 10) / 10
-        cycles = random.choice([0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 6])
+        shift = random.choice(self.config.crossover_config.possible_shifts)
+        cycles = random.choice(self.config.crossover_config.possible_cycles)
         mlp_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
                                                            num_cycles=cycles, phase_shift=np.pi * shift)
 
@@ -61,6 +62,10 @@ class SlerpMergeCrossover(CrossoverMethod):
         merge_output_path = f"{self.population_folder}/lm-{random_uuid}"
         slerp_merge.run_slerp_merge(merge_config_dict, output_path=merge_output_path)
         new_lm = EvoLM(merge_output_path, dna_id=str(random_uuid), parents=[p1, p2])
+
+        crossover_info = {"parameters": merge_config_dict["parameters"]}
+        new_lm.DNA.crossover_info = crossover_info
+
         return new_lm
 
     @staticmethod

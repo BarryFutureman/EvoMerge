@@ -1,17 +1,18 @@
-from evolution.mutation import *
+from evolution.mutation_methods.mutation import *
 import random
 from evolution.utils.qlora_dpo_mutation import run_dpo_mutation
 
 
 class ShortQloraMutation(MutationMethod):
-    def __init__(self, target_mutation_count, keep_top_k, mutation_strength=1):
+    def __init__(self, config):
         super(ShortQloraMutation, self).__init__()
-        self.target_mutation_count = target_mutation_count
-        self.keep_top_k = keep_top_k
-        self.mutation_strength = mutation_strength
+        self.config = config
+        self.keep_top_k = config.keep_top_k
+        """self.target_mutation_count = target_mutation_count
+        self.mutation_strength = mutation_strength"""
 
     def run_mutation(self, population):
-        mutate_count = self.target_mutation_count
+        mutate_count = self.config.mutate_count
         mutate_dict = {}
         for lm in population:
             if lm.force_mutate:
@@ -37,6 +38,7 @@ class ShortQloraMutation(MutationMethod):
     def mutate(self, target, num_mutation):
         if num_mutation == 0:
             return
-        mutation_info = run_dpo_mutation(target.model_folder, num_mutation, self.mutation_strength)
+        mutation_info = run_dpo_mutation(target.model_folder, num_mutation,
+                                         self.config.mutation_config)
         print(mutation_info)
         target.set_mutation_info(mutation_info)

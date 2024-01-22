@@ -184,7 +184,7 @@ def plot_fitness():
     )
 
 
-simulation_folder = "C:/Files/PycharmProjects/NeuralEvolution/EvoMerge/runs/MistralEvolve"
+simulation_folder = "C:/Files/PycharmProjects/EvoMerge/EvoMerge/runs/quick_evolve"
 dna_folder = simulation_folder + "/DNAs"
 current_gen_index = 0
 stop_refresh_gen_view_flag = False
@@ -225,4 +225,4 @@ with gr.Blocks(title="Dataset Viewer", theme=Softy()) as demo:
 
 
 demo.queue()
-demo.launch(max_threads=8, server_port=5000, share=False)
+demo.launch(max_threads=8, server_port=5000, share=True)
