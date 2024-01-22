@@ -22,6 +22,9 @@ class RandomEval(EvaluationMethod):
 
         for lm in population:
             fitness = self.do_eval(lm, tasks_file)
+            # Something is probably wrong of the fitness is less than 0.4
+            if fitness < 0.4:
+                fitness = 0.000001
             lm.set_fitness(fitness)
 
         return population

@@ -9,6 +9,7 @@
 /evolution/utils/data/
 /lm_eval/my_datasets
 __pycache__/
+/runs/MistralEvolve/DNAs/
 *.pyc
 *.pyo
 *.pyd

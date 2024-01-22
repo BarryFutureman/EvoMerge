@@ -184,7 +184,7 @@ def plot_fitness():
     )
 
 
-simulation_folder = "C:/Files/PycharmProjects/NeuralEvolution/EvoMerge/runs/evolve_tiny_llamas"
+simulation_folder = "C:/Files/PycharmProjects/NeuralEvolution/EvoMerge/runs/MistralEvolve"
 dna_folder = simulation_folder + "/DNAs"
 current_gen_index = 0
 stop_refresh_gen_view_flag = False

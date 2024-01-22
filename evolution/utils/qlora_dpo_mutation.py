@@ -124,8 +124,8 @@ def run_dpo_mutation(model_path, num_mutations, mutation_strength):
     # Training arguments
     adapter_path = model_path + "-lora-adapter"
     training_args = TrainingArguments(
-        per_device_train_batch_size=1,
-        gradient_accumulation_steps=2,
+        per_device_train_batch_size=4,
+        gradient_accumulation_steps=8,
         gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False},
         learning_rate=lr,
@@ -174,4 +174,4 @@ def run_dpo_mutation(model_path, num_mutations, mutation_strength):
 
 
 if __name__ == '__main__':
-    run_sft_mutation("TinyLlama/TinyLlama-1.1B-Chat-v1.0", 2)
+    run_dpo_mutation("TinyLlama/TinyLlama-1.1B-Chat-v1.0", 2, 1)
