@@ -46,7 +46,8 @@ class SelectionConfig:
 
 
 class CrossoverConfig:
-    def __init__(self, possible_shifts, possible_cycles):
+    def __init__(self, possible_shifts, possible_cycles, curve_type):
+        self.curve_type = curve_type
         self.possible_shifts = possible_shifts
         self.possible_cycles = possible_cycles
 

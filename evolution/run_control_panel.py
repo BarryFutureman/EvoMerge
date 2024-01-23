@@ -225,4 +225,4 @@ with gr.Blocks(title="Dataset Viewer", theme=Softy()) as demo:
 
 
 demo.queue()
-demo.launch(max_threads=8, server_port=5000, share=True)
+demo.launch(max_threads=8, server_name="0.0.0.0", server_port=7860, share=True)

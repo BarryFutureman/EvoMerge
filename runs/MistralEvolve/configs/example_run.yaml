@@ -1,25 +1,26 @@
-target_iterations: 6
+target_iterations: 3
 keep_top_k: 3
-mutate_count: 2
-max_population_size: 6
-expand_steps: 2
+mutate_count: 3
+max_population_size: 5
+expand_steps: 1
 
 evaluation:
-  eval_size: 4
+  eval_size: 2
   batch_size: 32
 
 selection:
   nothing_here: True
 
 crossover:
+  curve_type: "default"  # or "cosine"
   possible_shifts: [0, 0.5, 1]
   possible_cycles: [0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 6]
 
 mutation:
-  per_device_train_batch_size: 1
+  per_device_train_batch_size: 2
   gradient_accumulation_steps: 4
   mutation_strength: 8  # 8 * 32 dpo examples
-  possible_lr: [1e-5, 5e-5, 6e-6, 1e-6, 2e-6, 5e-7, 2e-7]
-  possible_lora_r: [8, 16, 32]
-  possible_lora_alpha: [8, 16, 32, 64]
-  possible_beta: [0.01, 0.02, 0.06]
+  possible_lr: [5e-5, 2e-6, 1e-6, 5e-7]
+  possible_lora_r: [32, 64]
+  possible_lora_alpha: [32, 64]
+  possible_beta: [0.01, 0.02]

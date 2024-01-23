@@ -35,15 +35,19 @@ class SlerpMergeCrossover(CrossoverMethod):
     def combine(self, p1, p2):
         num_layers = p1.config.num_hidden_layers
 
-        shift = random.choice(self.config.crossover_config.possible_shifts)
-        cycles = random.choice(self.config.crossover_config.possible_cycles)
-        self_attn_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
-                                                                 num_cycles=cycles, phase_shift=np.pi * shift)
+        if self.config.crossover_config.curve_type == "cosine":
+            shift = random.choice(self.config.crossover_config.possible_shifts)
+            cycles = random.choice(self.config.crossover_config.possible_cycles)
+            self_attn_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
+                                                                     num_cycles=cycles, phase_shift=np.pi * shift)
 
-        shift = random.choice(self.config.crossover_config.possible_shifts)
-        cycles = random.choice(self.config.crossover_config.possible_cycles)
-        mlp_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
-                                                           num_cycles=cycles, phase_shift=np.pi * shift)
+            shift = random.choice(self.config.crossover_config.possible_shifts)
+            cycles = random.choice(self.config.crossover_config.possible_cycles)
+            mlp_t_curve = self.generate_normalized_cosine_list(num_points=num_layers,
+                                                               num_cycles=cycles, phase_shift=np.pi * shift)
+        else:  # mergekit default
+            self_attn_t_curve = [0, 0.5, 0.3, 0.7, 1]
+            mlp_t_curve = [1, 0.5, 0.7, 0.3, 0]
 
         merge_config_dict = {'slices': [
             {'sources': [{'model': p1.model_folder, 'layer_range': [0, num_layers]},
@@ -53,7 +57,7 @@ class SlerpMergeCrossover(CrossoverMethod):
             'parameters': {'t': [
                 {'filter': 'self_attn', 'value': self_attn_t_curve},
                 {'filter': 'mlp', 'value': mlp_t_curve},
-                {'value': 0.5}
+                {'value': 0.45}  # 0.45 instead of 0.5
             ]},
             'dtype': 'float16',
             'tokenizer_source': 'union'}

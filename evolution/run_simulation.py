@@ -18,7 +18,7 @@ def run(simulation_folder):
         for filename in os.listdir(dna_folder):
             existing_iterations.append(int(filename[3:]))
         if existing_iterations:
-            generation_index = max(existing_iterations)
+            generation_index = max(existing_iterations) + 1
     else:
         os.mkdir(dna_folder)
 
@@ -29,7 +29,7 @@ def run(simulation_folder):
         for filename in os.listdir(population_folder):
             # Get the absolute path of the file
             file_path = f"{population_folder}/{filename}"
-            if not os.path.isdir(file_path):
+            if not os.path.isdir(file_path) or filename.startswith("."):
                 continue
 
             lm = EvoLM(model_folder=file_path, dna_id=filename)
@@ -101,6 +101,16 @@ def run(simulation_folder):
             if lm not in new_population:
                 lm.delete_files()
         population = new_population
+
+        # Save before mutation because we get OOM sometimes :[
+        print("================ Save before we do mutations =================")
+        for j, p in enumerate(population):
+            print(p, ":", population[j].DNA)
+            # Save the population DNAs here
+            curr_gen_folder = dna_folder + f"/Gen{generation_index + iteration + 1}"
+            if not os.path.exists(curr_gen_folder):
+                os.mkdir(curr_gen_folder)
+            p.DNA.save_as_json(curr_gen_folder)
 
         population = mutation_process.run_mutation(population)
 

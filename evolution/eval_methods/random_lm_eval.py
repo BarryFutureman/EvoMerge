@@ -32,7 +32,7 @@ class RandomEval(EvaluationMethod):
         print(old_seed)"""
         # random_size = random.randint(10, 20)
         hellaswag_json_file = randomly_sample_hellaswag(dataset_dir=self.dataset_dir,
-                                                        sample_size=16 * self.config.eval_config.eval_size)
+                                                        sample_size=64 * self.config.eval_config.eval_size)
         # gsm8k_json_file = randomly_sample_gsm8k(dataset_dir=self.dataset_dir, sample_size=10)
         winogrande_json_file = randomly_sample_winogrande(dataset_dir=self.dataset_dir,
                                                           sample_size=128 * self.config.eval_config.eval_size)

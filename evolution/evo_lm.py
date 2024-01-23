@@ -36,6 +36,7 @@ class EvoDNA:
             'model_name': self.model_name,
             'fitness': self.fitness,
             'parents': self.parents,
+            'crossover_info': self.crossover_info,
             'mutation_info': self.mutation_info
         })
 
