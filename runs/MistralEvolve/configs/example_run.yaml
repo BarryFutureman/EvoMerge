@@ -1,7 +1,7 @@
-target_iterations: 3
+target_iterations: 2
 keep_top_k: 2
 mutate_count: 2
-max_population_size: 6
+max_population_size: 3
 expand_steps: 1
 
 evaluation:
@@ -17,9 +17,9 @@ crossover:
   possible_cycles: [0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 6]
 
 mutation:
-  per_device_train_batch_size: 2
-  gradient_accumulation_steps: 2
-  mutation_strength: 8  # 8 * 32 dpo examples
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 1
+  mutation_strength: 2  # 8 * 32 dpo examples
   possible_lr: [5e-5, 2e-6, 1e-6, 5e-7]
   possible_lora_r: [32, 64]
   possible_lora_alpha: [32, 64]

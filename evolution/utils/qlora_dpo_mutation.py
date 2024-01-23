@@ -162,6 +162,8 @@ def run_dpo_mutation(model_path, num_mutations, mutation_config):
 
     dpo_trainer.save_model(adapter_path)
 
+    torch.cuda.empty_cache()
+
     merge_lora(model_path, tokenizer, adapter_path)
 
     # The random seeds are changed here,
