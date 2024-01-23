@@ -150,6 +150,19 @@ def plot_fitness():
                 with open(f, 'r') as target_data_file:
                     data = json.load(target_data_file)
 
+                    if data["fitness"] is None:
+                        data["fitness"] = 0
+                    if data["id"].startswith("lm"):
+                        data["id"] = data["id"][3:]
+                    if data["parents"] is not None:
+                        for i, p in enumerate(data["parents"]):
+                            if p.startswith("lm"):
+                                data["parents"][i] = p[3:]
+                    # Quick hack to fix the json data
+                    with open(f, 'w') as rewrite_data_file:
+                        json.dump(data, rewrite_data_file)
+
+
                     group_fitness_scores.append(data["fitness"])
 
 
@@ -184,7 +197,7 @@ def plot_fitness():
     )
 
 
-simulation_folder = "C:/Files/PycharmProjects/EvoMerge/EvoMerge/runs/quick_evolve"
+simulation_folder = "C:/Files/PycharmProjects/EvoMerge/EvoMerge/runs/wild_west"
 dna_folder = simulation_folder + "/DNAs"
 current_gen_index = 0
 stop_refresh_gen_view_flag = False
@@ -225,4 +238,4 @@ with gr.Blocks(title="Dataset Viewer", theme=Softy()) as demo:
 
 
 demo.queue()
-demo.launch(max_threads=8, server_name="0.0.0.0", server_port=7860, share=True)
+demo.launch(max_threads=8,  server_port=7860, share=True) # server_name="0.0.0.0",

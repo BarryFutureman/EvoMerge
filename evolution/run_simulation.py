@@ -41,7 +41,7 @@ def run(simulation_folder):
     print(simulation_config)
 
     population_size = len(population)
-    min_population_size = population_size
+    min_population_size = simulation_config.keep_top_k
     max_population_size = simulation_config.max_population_size
     target_iterations = simulation_config.target_iterations
 
@@ -116,7 +116,7 @@ def run(simulation_folder):
 
 
 if __name__ == '__main__':
-    run("C:/Files/PycharmProjects/EvoMerge/EvoMerge/runs/quick_evolve")
+    run("/EvoMerge/runs/MistralEvolve")
 
 
 
