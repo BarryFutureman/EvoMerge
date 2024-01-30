@@ -196,8 +196,8 @@ def plot_fitness():
         height=256,
     )
 
-
-simulation_folder = "C:/Files/PycharmProjects/EvoMerge/EvoMerge/runs/wild_west"
+raise NotImplementedError("Remove this line and put in the correct path below.")
+simulation_folder = "/path/to/simulation/folder"
 dna_folder = simulation_folder + "/DNAs"
 current_gen_index = 0
 stop_refresh_gen_view_flag = False

@@ -10,6 +10,7 @@
 /lm_eval/my_datasets
 __pycache__/
 /runs/MistralEvolve/DNAs/
+/runs/MistralEvolve/population/upload_model.py
 *.pyc
 *.pyo
 *.pyd

@@ -116,7 +116,8 @@ def run(simulation_folder):
 
 
 if __name__ == '__main__':
-    run("/EvoMerge/runs/MistralEvolve")
+    raise NotImplementedError("Remove this line and put in the correct path below.")
+    run("/path/to/simulation/folder")
 
 
 
