@@ -1,5 +1,4 @@
 # EvoMerge - Neuroevolution for Large Language Models
-### It would be fantastic if someone could endorse me for arXiv so I can publish a paper. The endorsement code is: TJWH9Z
 
 ## Quick Start:
 #### 1. Installation
